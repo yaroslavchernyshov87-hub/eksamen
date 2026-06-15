@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IT Help Portal</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    max-width:900px;
+    margin:20px auto;
+    background:#f4f4f4;
+}
+
+.container{
+    background:white;
+    padding:20px;
+    border-radius:10px;
+}
+
+h1,h2{
+    color:#333;
+}
+
+input,select,textarea{
+    width:100%;
+    padding:10px;
+    margin:5px 0 15px;
+}
+
+button{
+    background:#0078d7;
+    color:white;
+    border:none;
+    padding:10px 20px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#005fa3;
+}
+
+.ticket{
+    border-left:5px solid green;
+    background:#eee;
+    padding:10px;
+    margin-top:10px;
+}
+
+.error{
+    color:red;
+}
+
+.problem{
+    background:#f9f9f9;
+    padding:10px;
+    margin-bottom:10px;
+    border-left:4px solid #0078d7;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<h1>IT Help Portal</h1>
+
+<h2>Registrer IT-sak</h2>
+
+<p class="error" id="error"></p>
+
+<input type="text" id="name" placeholder="Navn">
+
+<select id="role">
+    <option value="">Velg rolle</option>
+    <option>Elev</option>
+    <option>Lærer</option>
+    <option>Admin</option>
+</select>
+
+<input type="text" id="location" placeholder="Rom/Klasse eller Avdeling">
+
+<select id="problemType">
+    <option value="">Type problem</option>
+    <option>Nettverk</option>
+    <option>Skriver</option>
+    <option>Programvare</option>
+    <option>Maskinvare</option>
+    <option>E-post</option>
+    <option>Login</option>
+</select>
+
+<textarea id="description" rows="4"
+placeholder="Beskriv problemet"></textarea>
+
+<button onclick="createTicket()">Send inn</button>
+
+<hr>
+
+<h2>Vanlige IT-problemer</h2>
+
+<div class="problem">
+<b>Kan ikke koble til WiFi</b><br>
+Start ruteren eller koble til nettverket på nytt.
+</div>
+
+<div class="problem">
+<b>Skriveren fungerer ikke</b><br>
+Kontroller strøm og nettverkstilkobling.
+</div>
+
+<div class="problem">
+<b>Glemt passord</b><br>
+Kontakt IT-avdelingen for tilbakestilling.
+</div>
+
+<div class="problem">
+<b>Program krasjer</b><br>
+Start programmet eller PC-en på nytt.
+</div>
+
+<hr>
+
+<h2>Innmeldte saker</h2>
+
+<div id="tickets"></div>
+
+</div>
+
+<script>
+
+let tickets = JSON.parse(localStorage.getItem("tickets")) || [];
+
+function createTicket(){
+
+    let name = document.getElementById("name").value;
+    let role = document.getElementById("role").value;
+    let location = document.getElementById("location").value;
+    let type = document.getElementById("problemType").value;
+    let description = document.getElementById("description").value;
+
+    if(name === "" || role === "" || location === "" ||
+       type === "" || description.length < 5){
+
+        document.getElementById("error").innerText =
+        "Fyll ut alle feltene.";
+        return;
+    }
+
+    document.getElementById("error").innerText = "";
+
+    let ticket = {
+        name,
+        role,
+        location,
+        type,
+        description,
+        status:"Pending"
+    };
+
+    tickets.push(ticket);
+
+    localStorage.setItem(
+        "tickets",
+        JSON.stringify(tickets)
+    );
+
+    showTickets();
+
+    document.getElementById("name").value="";
+    document.getElementById("role").value="";
+    document.getElementById("location").value="";
+    document.getElementById("problemType").value="";
+    document.getElementById("description").value="";
+}
+
+function showTickets(){
+
+    let output = "";
+
+    tickets.forEach(ticket => {
+
+        output += `
+        <div class="ticket">
+            <b>${ticket.name}</b> (${ticket.role})<br>
+            <b>Sted:</b> ${ticket.location}<br>
+            <b>Problem:</b> ${ticket.type}<br>
+            <b>Beskrivelse:</b> ${ticket.description}<br>
+            <b>Status:</b> ${ticket.status}
+        </div>
+        `;
+    });
+
+    document.getElementById("tickets").innerHTML = output;
+}
+
+showTickets();
+
+</script>
+
+</body>
+</html>
